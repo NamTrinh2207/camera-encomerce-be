@@ -1,0 +1,105 @@
+package com.example.cameraincome.controller;
+
+import com.example.cameraincome.model.DTO.ICountRole;
+import com.example.cameraincome.model.DTO.JwtResponse;
+import com.example.cameraincome.model.DTO.request.SignInForm;
+import com.example.cameraincome.model.DTO.request.SignUpForm;
+import com.example.cameraincome.model.DTO.response.ResponseMessage;
+import com.example.cameraincome.model.user.Roles;
+import com.example.cameraincome.model.user.Users;
+import com.example.cameraincome.service.jwt.JwtService;
+import com.example.cameraincome.service.role.IRoleService;
+import com.example.cameraincome.service.user.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.Set;
+
+@RestController
+@CrossOrigin("*")
+@RequestMapping("/api")
+public class AuthController {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private IUserService userService;
+    @Autowired
+    private IRoleService roleService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+    //create user
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignUpForm user) {
+        if (userService.existsByUsername(user.getUsername())) {
+            return new ResponseEntity<>(new ResponseMessage("Tên tài khoản đã tồn tại"), HttpStatus.OK);
+        }
+        if (userService.existsByEmail(user.getEmail())) {
+            return new ResponseEntity<>(new ResponseMessage("Email đã tồn tại"), HttpStatus.OK);
+        }
+        Users users = new Users(user.getName(), user.getPhone(),user.getEmail(),user.getAddress(),
+                user.getAvatar(),user.getUsername(),passwordEncoder.encode(user.getPassword()));
+        Set<String> roleNames = user.getRoles();
+        Set<Roles> roles = roleService.getRolesByName(roleNames);
+        users.setRoleSet(roles);
+        users.setAvatar("https://cdn-icons-png.flaticon.com/512/149/149071.png");
+        userService.save(users);
+        return new ResponseEntity<>(new ResponseMessage("Tạo tài khoản thành công"), HttpStatus.OK);
+    }
+
+    /**
+     * Xác thực thông tin đăng nhập và tạo JWT token cho người dùng.
+     *
+     * @param user thông tin đăng nhập của người dùng
+     * @return ResponseEntity chứa thông tin JWT token và thông tin người dùng
+     */
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> login(@RequestBody SignInForm user) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtService.generateTokenLogin(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Users currentUser = userService.findByUsername(user.getUsername());
+        JwtResponse jwtResponse = new JwtResponse(jwt,currentUser.getId(), currentUser.getName(),
+                currentUser.getAvatar(), currentUser.getUsername(), userDetails.getAuthorities());
+        return ResponseEntity.ok(jwtResponse);
+    }
+
+
+    //edit user
+    @PutMapping("/{id}")
+    public ResponseEntity<Users> update(@PathVariable Long id, @RequestBody Users user) {
+        Optional<Users> userOptional = userService.findById(id);
+        if (userOptional.isPresent()) {
+            user.setId(id);
+            return new ResponseEntity<>(userService.save(user), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/hello")
+    public ResponseEntity<?> hello() {
+        return new ResponseEntity<>(new ResponseMessage("hello"), HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<String> user() {
+        return new ResponseEntity<>("User", HttpStatus.OK);
+    }
+
+}
