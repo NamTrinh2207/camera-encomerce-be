@@ -1,5 +1,6 @@
 package com.example.cameraincome.controller;
 
+import com.example.cameraincome.model.DTO.ICountRole;
 import com.example.cameraincome.model.DTO.JwtResponse;
 import com.example.cameraincome.model.DTO.request.SignInForm;
 import com.example.cameraincome.model.DTO.request.SignUpForm;
@@ -91,12 +92,13 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<?> hello() {
-        return new ResponseEntity<>(new ResponseMessage("hello"), HttpStatus.OK);
+    @GetMapping("/admin/hello")
+    public ResponseEntity<Iterable<ICountRole>> hello() {
+        Iterable<ICountRole> iCountRoles = userService.getRoleNumber();
+        return new ResponseEntity<>(iCountRoles, HttpStatus.OK);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user/hello")
     public ResponseEntity<String> user() {
         return new ResponseEntity<>("User", HttpStatus.OK);
     }
