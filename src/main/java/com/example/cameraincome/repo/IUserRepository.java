@@ -13,6 +13,6 @@ public interface IUserRepository extends CrudRepository<Users, Long> {
     Optional<Users> findByUsername(String name);
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
-    @Query(nativeQuery = true, value = "select r.name, count(users.username) as 'number' from users join user_roles ur on users.id = ur.user_id join role r on r.id = ur.role_id group by r.name;")
+    @Query(nativeQuery = true, value = "select u.name,count(r.name) as number from users u join roles r on u.id = r.id group by u.name")
     Iterable<ICountRole> getRoleNumber();
 }

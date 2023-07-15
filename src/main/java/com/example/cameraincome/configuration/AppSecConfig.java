@@ -63,10 +63,9 @@ public class AppSecConfig extends WebSecurityConfigurerAdapter implements WebMvc
         http.csrf().ignoringAntMatchers("/**");
         http.httpBasic().authenticationEntryPoint(restAuthenticationEntryPoint());
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/api", "/login").permitAll()
-                .and().authorizeRequests().antMatchers("/admin/**").hasAnyRole("ADMIN")
-                .and().authorizeRequests().antMatchers("/user/**").hasAnyRole("USER")
-                .and().authorizeRequests().antMatchers("/customer/**").hasAnyRole("CUSTOMER");
+                .antMatchers("/api/signup","/api/login").permitAll()
+                .and().authorizeRequests().antMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                .and().authorizeRequests().antMatchers("/api/user/**").hasAnyRole("USER");
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
         http.sessionManagement()
