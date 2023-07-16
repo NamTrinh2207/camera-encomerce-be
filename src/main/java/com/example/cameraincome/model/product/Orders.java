@@ -4,7 +4,6 @@ import com.example.cameraincome.model.user.Users;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
 
 @Entity
 @Table(name = "orders")
@@ -18,7 +17,7 @@ public class Orders implements Serializable {
     @JoinColumn(name = "user_id")
     private Users users;
     @OneToOne
-    @JoinColumn(name = "home_id")
+    @JoinColumn(name = "camera_id")
     private Camera camera;
     private boolean isDone;
 

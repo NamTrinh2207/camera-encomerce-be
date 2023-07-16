@@ -3,14 +3,14 @@ package com.example.cameraincome.model.product;
 import javax.persistence.*;
 
 @Entity
-public class RentalHistory {
+public class BillHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
     private Orders orders;
 
-    public RentalHistory() {
+    public BillHistory() {
     }
 
     public Long getId() {
