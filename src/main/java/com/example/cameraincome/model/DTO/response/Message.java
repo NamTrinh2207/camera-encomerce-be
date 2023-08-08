@@ -1,13 +1,13 @@
 package com.example.cameraincome.model.DTO.response;
 
-public class ResponseMessage {
+public class Message {
     private String message;
 
-    public ResponseMessage(String message) {
+    public Message(String message) {
         this.message = message;
     }
 
-    public ResponseMessage() {
+    public Message() {
     }
 
     public String getMessage() {

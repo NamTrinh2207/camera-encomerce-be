@@ -4,7 +4,7 @@ import com.example.cameraincome.model.DTO.ICountRole;
 import com.example.cameraincome.model.DTO.JwtResponse;
 import com.example.cameraincome.model.DTO.request.SignInForm;
 import com.example.cameraincome.model.DTO.request.SignUpForm;
-import com.example.cameraincome.model.DTO.response.ResponseMessage;
+import com.example.cameraincome.model.DTO.response.Message;
 import com.example.cameraincome.model.user.Roles;
 import com.example.cameraincome.model.user.Users;
 import com.example.cameraincome.service.jwt.JwtService;
@@ -45,10 +45,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpForm user) {
         if (userService.existsByUsername(user.getUsername())) {
-            return new ResponseEntity<>(new ResponseMessage("Tên tài khoản đã tồn tại"), HttpStatus.OK);
+            return new ResponseEntity<>(new Message("Tên tài khoản đã tồn tại"), HttpStatus.OK);
         }
         if (userService.existsByEmail(user.getEmail())) {
-            return new ResponseEntity<>(new ResponseMessage("Email đã tồn tại"), HttpStatus.OK);
+            return new ResponseEntity<>(new Message("Email đã tồn tại"), HttpStatus.OK);
         }
         Users users = new Users(user.getName(), user.getPhone(),user.getEmail(),user.getAddress(),
                 user.getAvatar(),user.getUsername(),passwordEncoder.encode(user.getPassword()));
@@ -57,7 +57,7 @@ public class AuthController {
         users.setRoleSet(roles);
         users.setAvatar("https://cdn-icons-png.flaticon.com/512/149/149071.png");
         userService.save(users);
-        return new ResponseEntity<>(new ResponseMessage("Tạo tài khoản thành công"), HttpStatus.OK);
+        return new ResponseEntity<>(new Message("Tạo tài khoản thành công"), HttpStatus.OK);
     }
 
     /**
