@@ -22,11 +22,11 @@ public class EmailService {
         helper.setTo(recipientEmail);
         helper.setSubject("Thông báo: Mật khẩu mới của bạn");
         String emailContent = "<div style='border: 1px solid #ddd; padding: 20px; text-align: center;'>"
-                + "<h2>Thông báo</h2>"
+                + "<h1>Thông báo</h2>"
                 + "<p>Chào bạn,</p>"
                 + "<p>🔐 Chúng tôi rất vui thông báo rằng bạn đã yêu cầu khôi phục mật khẩu của mình.</p>"
                 + "<p>Dưới đây là mật khẩu mới để bạn đăng nhập:</p>"
-                + "<p><strong style='font-size: 18px;'>Mật khẩu mới: " + newPassword + "</strong></p>"
+                + "<p><strong style='font-size: 17px;'>Mật khẩu mới: " + newPassword + "</strong></p>"
                 + "<p>Vui lòng thay đổi mật khẩu sau khi đăng nhập để đảm bảo tính bảo mật của tài khoản.</p>"
                 + "<p>Trân trọng,<br>💼 Đội ngũ hỗ trợ CameraMen</p>"
                 + "</div>";
