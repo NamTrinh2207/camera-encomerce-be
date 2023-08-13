@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface IUserRepository extends CrudRepository<Users, Long> {
     Optional<Users> findByUsername(String name);
+    Optional<Users> findByEmail(String email);
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
     @Query(nativeQuery = true, value = "select u.name,count(r.name) as number from users u join roles r on u.id = r.id group by u.name")
