@@ -2,11 +2,13 @@ package com.example.cameraincome.controller;
 
 import com.example.cameraincome.model.DTO.ICountRole;
 import com.example.cameraincome.model.DTO.JwtResponse;
+import com.example.cameraincome.model.DTO.request.ForgotPasswordForm;
 import com.example.cameraincome.model.DTO.request.SignInForm;
 import com.example.cameraincome.model.DTO.request.SignUpForm;
 import com.example.cameraincome.model.DTO.response.Message;
 import com.example.cameraincome.model.user.Roles;
 import com.example.cameraincome.model.user.Users;
+import com.example.cameraincome.service.emailService.EmailService;
 import com.example.cameraincome.service.jwt.JwtService;
 import com.example.cameraincome.service.role.IRoleService;
 import com.example.cameraincome.service.user.IUserService;
@@ -36,9 +38,10 @@ public class AuthController {
     private IUserService userService;
     @Autowired
     private IRoleService roleService;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
 
 
     //create user
@@ -50,8 +53,8 @@ public class AuthController {
         if (userService.existsByEmail(user.getEmail())) {
             return new ResponseEntity<>(new Message("Email đã tồn tại"), HttpStatus.BAD_REQUEST);
         }
-        Users users = new Users(user.getName(), user.getPhone(),user.getEmail(),user.getAddress(),
-                user.getAvatar(),user.getUsername(),passwordEncoder.encode(user.getPassword()));
+        Users users = new Users(user.getName(), user.getPhone(), user.getEmail(), user.getAddress(),
+                user.getAvatar(), user.getUsername(), passwordEncoder.encode(user.getPassword()));
         Set<String> roleNames = user.getRoles();
         Set<Roles> roles = roleService.getRolesByName(roleNames);
         users.setRoleSet(roles);
@@ -74,11 +77,24 @@ public class AuthController {
         String jwt = jwtService.generateTokenLogin(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Users currentUser = userService.findByUsername(user.getUsername());
-        JwtResponse jwtResponse = new JwtResponse(jwt,currentUser.getId(), currentUser.getName(),
+        JwtResponse jwtResponse = new JwtResponse(jwt, currentUser.getId(), currentUser.getName(),
                 currentUser.getAvatar(), currentUser.getUsername(), userDetails.getAuthorities());
         return ResponseEntity.ok(jwtResponse);
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordForm forgotPasswordForm) {
+        String emailInput = forgotPasswordForm.getEmail();
+        Users user = userService.findByEmail(emailInput);
+        if (user == null) {
+            return new ResponseEntity<>(new Message("Email bạn nhập không tồn tại"), HttpStatus.BAD_REQUEST);
+        }
+        String newPassword = emailService.generateNewPassword();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userService.save(user);
+        emailService.sendNewPasswordEmail(emailInput, newPassword);
+        return new ResponseEntity<>(new Message("Mật khẩu mới đã được gửi đến email của bạn"), HttpStatus.OK);
+    }
 
     //edit user
     @PutMapping("/{id}")
