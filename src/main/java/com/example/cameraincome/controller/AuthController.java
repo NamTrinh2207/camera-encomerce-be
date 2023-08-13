@@ -45,10 +45,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpForm user) {
         if (userService.existsByUsername(user.getUsername())) {
-            return new ResponseEntity<>(new Message("Tên tài khoản đã tồn tại"), HttpStatus.OK);
+            return new ResponseEntity<>(new Message("Tên tài khoản đã tồn tại"), HttpStatus.BAD_REQUEST);
         }
         if (userService.existsByEmail(user.getEmail())) {
-            return new ResponseEntity<>(new Message("Email đã tồn tại"), HttpStatus.OK);
+            return new ResponseEntity<>(new Message("Email đã tồn tại"), HttpStatus.BAD_REQUEST);
         }
         Users users = new Users(user.getName(), user.getPhone(),user.getEmail(),user.getAddress(),
                 user.getAvatar(),user.getUsername(),passwordEncoder.encode(user.getPassword()));
