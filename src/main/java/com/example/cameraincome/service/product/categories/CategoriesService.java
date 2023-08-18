@@ -15,6 +15,7 @@ public class CategoriesService implements ICategoriesService{
         return categoriesRepository.findAll();
     }
 
+
     @Override
     public Optional<Category> findById(Long id) {
         return Optional.empty();
