@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
-public class CategoriesService implements ICategoriesService{
+public class CategoriesService implements ICategoriesService {
     @Autowired
     private ICategoriesRepository categoriesRepository;
+
     @Override
     public Iterable<Category> findAll() {
         return categoriesRepository.findAll();
@@ -18,16 +20,16 @@ public class CategoriesService implements ICategoriesService{
 
     @Override
     public Optional<Category> findById(Long id) {
-        return Optional.empty();
+        return categoriesRepository.findById(id);
     }
 
     @Override
     public Category save(Category category) {
-        return null;
+        return categoriesRepository.save(category);
     }
 
     @Override
     public void remove(Long id) {
-
+        categoriesRepository.deleteById(id);
     }
 }
