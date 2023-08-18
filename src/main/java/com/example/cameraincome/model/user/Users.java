@@ -23,6 +23,7 @@ public class Users {
     private String address;
     private String email;
     private String phone;
+    private String oldPassword;
     @Lob
     private String avatar;
     @ManyToMany(fetch = FetchType.EAGER)
@@ -112,5 +113,11 @@ public class Users {
         this.roleSet = roleSet;
     }
 
+    public String getOldPassword() {
+        return oldPassword;
+    }
 
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
 }

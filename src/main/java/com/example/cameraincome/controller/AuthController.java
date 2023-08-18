@@ -97,6 +97,23 @@ public class AuthController {
         return new ResponseEntity<>(new Message("Mật khẩu mới đã được gửi đến email của bạn"), HttpStatus.OK);
     }
 
+    @PostMapping("/change-password/{id}")
+    public ResponseEntity<?> changePassword(@PathVariable Long id, @RequestBody Users users) {
+        Optional<Users> usersOptional = userService.findById(id);
+        if (usersOptional.isPresent()) {
+            Users existUser = usersOptional.get();
+            if (!passwordEncoder.matches(users.getOldPassword(), existUser.getPassword())) {
+                return new ResponseEntity<>(new Message("Mật khẩu hiện tại không chính xác"), HttpStatus.BAD_REQUEST);
+            } else {
+                existUser.setPassword(passwordEncoder.encode(users.getPassword()));
+                userService.save(existUser);
+                return new ResponseEntity<>(new Message("Thay đổi mật khẩu thành công"), HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>(new Message("Người dùng không tồn tại"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     //edit user
     @PutMapping("/{id}")
     public ResponseEntity<Users> update(@PathVariable Long id, @RequestBody Users user) {
